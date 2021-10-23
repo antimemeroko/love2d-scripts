@@ -1,109 +1,109 @@
 -- Copyright (c) 2021 Batzhargal Ulzutuev
 ------------------------------------------------------------------------------
--- vector3 -like class implementation - reinvent the wheel
+-- vector3-like class implementation - reinvent the wheel
 
-local calc = {}
+local vector3d = {}
 
-calc.Point = {}
-calc.metaPoint = {}
-function calc.Point.new(a,b,c)
+vector3d.Point = {}
+vector3d.metaPoint = {}
+function vector3d.Point.new(a,b,c)
 	local temp = { x=a or 0, y=b or 0, z=c or 0 } -- may be some perfomance issues are connected with double memory assignment or smth like this
-	setmetatable(temp, calc.metaPoint)
+	setmetatable(temp, vector3d.metaPoint)
 	return temp
 end
 
-function calc.Point.rad(a)
+function vector3d.Point.rad(a)
 	return (a.x^2+a.y^2+a.z^2)^0.5
 end
-function calc.Point.rad2(a)
+function vector3d.Point.rad2(a)
 	return (a.x^2+a.y^2+a.z^2)
 end
-function calc.Point.radxy(a)
+function vector3d.Point.radxy(a)
 	return (a.x^2+a.y^2)^0.5
 end
 
-function calc.Point.rev(a)
-	return calc.Point.new(-a.x, -a.y, -a.z)
+function vector3d.Point.rev(a)
+	return vector3d.Point.new(-a.x, -a.y, -a.z)
 end
 
-function calc.Point.sum(a, b)
-	return calc.Point.new(a.x+b.x, a.y+b.y, a.z+b.z)
+function vector3d.Point.sum(a, b)
+	return vector3d.Point.new(a.x+b.x, a.y+b.y, a.z+b.z)
 end
 
-function calc.Point.sumconst(a, b)
-	return calc.Point.new(a.x+b, a.y+b, a.z+b)
+function vector3d.Point.sumconst(a, b)
+	return vector3d.Point.new(a.x+b, a.y+b, a.z+b)
 end
 
-function calc.Point.prod(a, b)
-	return calc.Point.new(a.x*b.x, a.y*b.y, a.z*b.z)
+function vector3d.Point.prod(a, b)
+	return vector3d.Point.new(a.x*b.x, a.y*b.y, a.z*b.z)
 end
 
-function calc.Point.prodconst(a, const)
-	return calc.Point.new(a.x*const, a.y*const, a.z*const)
+function vector3d.Point.prodconst(a, const)
+	return vector3d.Point.new(a.x*const, a.y*const, a.z*const)
 end
-function calc.Point.scalar(a,b)
+function vector3d.Point.scalar(a,b)
 	return (a.x*b.x+a.y*b.y+a.z*b.z)
 end
-function calc.Point.vector(a,b)
-	return calc.Point.new(a.y*b.z-a.z*b.y, a.z*b.x-a.x*b.z, a.x*b.y-a.y*b.x)
+function vector3d.Point.vector(a,b)
+	return vector3d.Point.new(a.y*b.z-a.z*b.y, a.z*b.x-a.x*b.z, a.x*b.y-a.y*b.x)
 end
-function calc.Point.sinphi(a,b)
-	local rada = calc.Point.rad(a)
+function vector3d.Point.sinphi(a,b)
+	local rada = vector3d.Point.rad(a)
 	if rada==0 then return 0 end
-	local radb = calc.Point.rad(b)
+	local radb = vector3d.Point.rad(b)
 	if radb==0 then return 0 end
-	return (calc.Point.rad(calc.Point.vector(a,b))/rada/radb)
+	return (vector3d.Point.rad(vector3d.Point.vector(a,b))/rada/radb)
 end
-function calc.Point.cosphi(a,b)
-	local rada = calc.Point.rad(a)
+function vector3d.Point.cosphi(a,b)
+	local rada = vector3d.Point.rad(a)
 	if rada==0 then return 0 end
-	local radb = calc.Point.rad(b)
+	local radb = vector3d.Point.rad(b)
 	if radb==0 then return 0 end
-	return (calc.Point.scalar(a,b)/rada/radb)
+	return (vector3d.Point.scalar(a,b)/rada/radb)
 end
-function calc.Point.proceed(point, dx, dy, dz)
+function vector3d.Point.proceed(point, dx, dy, dz)
 	point.x = point.x + dx
 	point.y = point.y + dy
 	if dz then point.z = point.z + dz end
 end
 
-calc.metaPoint.__unm = calc.Point.rev
-function calc.metaPoint.__add(a, b)
-	if getmetatable(a)~=calc.metaPoint then
-		return calc.Point.sumconst(b,a)
-	elseif getmetatable(b)~=calc.metaPoint then
-		return calc.Point.sumconst(a,b)
+vector3d.metaPoint.__unm = vector3d.Point.rev
+function vector3d.metaPoint.__add(a, b)
+	if getmetatable(a)~=vector3d.metaPoint then
+		return vector3d.Point.sumconst(b,a)
+	elseif getmetatable(b)~=vector3d.metaPoint then
+		return vector3d.Point.sumconst(a,b)
 	else
-		return calc.Point.sum(a,b)
+		return vector3d.Point.sum(a,b)
 	end
 end
-function calc.metaPoint.__sub(a, b)
-	if getmetatable(a)~=calc.metaPoint then
-		return calc.Point.sumconst(-b,a)
-	elseif getmetatable(b)~=calc.metaPoint then
-		return calc.Point.sumconst(a,-b)
+function vector3d.metaPoint.__sub(a, b)
+	if getmetatable(a)~=vector3d.metaPoint then
+		return vector3d.Point.sumconst(-b,a)
+	elseif getmetatable(b)~=vector3d.metaPoint then
+		return vector3d.Point.sumconst(a,-b)
 	else
-		return calc.Point.sum(a,-b)
+		return vector3d.Point.sum(a,-b)
 	end
 end
-function calc.metaPoint.__mul(a, b)
-	if getmetatable(a)~=calc.metaPoint then
-		return calc.Point.prodconst(b,a)
-	elseif getmetatable(b)~=calc.metaPoint then
-		return calc.Point.prodconst(a,b)
+function vector3d.metaPoint.__mul(a, b)
+	if getmetatable(a)~=vector3d.metaPoint then
+		return vector3d.Point.prodconst(b,a)
+	elseif getmetatable(b)~=vector3d.metaPoint then
+		return vector3d.Point.prodconst(a,b)
 	else
-		return calc.Point.prod(a,b)
+		return vector3d.Point.prod(a,b)
 	end
 end
 
-calc.MPoint = {}
-function calc.MPoint.new(a,b)
-	return { p=a or calc.Point.new(), v=b or calc.Point.new() }
+vector3d.MPoint = {}
+function vector3d.MPoint.new(a,b)
+	return { p=a or vector3d.Point.new(), v=b or vector3d.Point.new() }
 end
-function calc.MPoint.proceed(mpoint, deltat)
+function vector3d.MPoint.proceed(mpoint, deltat)
 	mpoint.p.x = mpoint.p.x + mpoint.v.x*deltat
 	mpoint.p.y = mpoint.p.y + mpoint.v.y*deltat
 	mpoint.p.z = mpoint.p.z + mpoint.v.z*deltat
 end
 
-return calc
+return vector3d

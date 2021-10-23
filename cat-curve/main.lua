@@ -3,8 +3,11 @@
 --
 
 --print(package.path)
-package.path = package.path .. ";../?.lua"	-- this can be a problem if package.path is constantly updated, see
-											-- https://medium.com/@fabricebaumann/how-we-reduced-the-cpu-usage-of-our-lua-code-cc30d001a328
+
+-- this can be a problem if package.path is constantly updated, see
+-- https://medium.com/@fabricebaumann/how-we-reduced-the-cpu-usage-of-our-lua-code-cc30d001a328
+
+package.path = ";../?.lua" .. package.path
 
 local vector3d = require "vector3d"
 local Point = vector3d.Point
